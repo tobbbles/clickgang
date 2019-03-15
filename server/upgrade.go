@@ -46,6 +46,7 @@ func (s *Server) handle(ws *websocket.Conn) {
 			continue
 		}
 
+		log.Println(string(buf))
 		message := &event.ReceiveMessage{}
 		if err := json.Unmarshal(buf, message); err != nil {
 			s.errors <- err
@@ -53,7 +54,7 @@ func (s *Server) handle(ws *websocket.Conn) {
 		}
 
 		// Invalid event
-		if message.Event != event.ReceiveConnect && message.SenderID == uuid.Nil {
+		if message.Event != event.ReceiveConnect && message.ID == uuid.Nil {
 			s.dispatch <- &event.DispatchMessage{
 				Event: event.DispatchError,
 				Data: event.Errored{
@@ -64,13 +65,13 @@ func (s *Server) handle(ws *websocket.Conn) {
 			continue
 		}
 
-		if message.Event == event.ReceiveConnect && message.SenderID == uuid.Nil {
-			message.SenderID = uuid.New()
+		if message.Event == event.ReceiveConnect && message.ID == uuid.Nil {
+			message.ID = uuid.New()
 		}
 
 		// Add to connection pools
 		s.pmu.Lock()
-		s.pool[message.SenderID] = ws
+		s.pool[message.ID] = ws
 		s.pmu.Unlock()
 
 		// DispatchEvent message to system
@@ -79,8 +80,8 @@ func (s *Server) handle(ws *websocket.Conn) {
 		// TODO: Re-calculate order on user closing connection. Have grace period for a re-connetions
 		ws.SetCloseHandler(func(code int, text string) error {
 			s.receive <- &event.ReceiveMessage{
-				Event:    event.DispatchDisconnected,
-				SenderID: message.SenderID,
+				Event: event.DispatchDisconnected,
+				ID:    message.ID,
 			}
 
 			return nil

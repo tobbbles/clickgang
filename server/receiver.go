@@ -13,7 +13,7 @@ func (s *Server) Receiver(w *world.World) {
 		case msg := <-s.receive:
 			switch msg.Event {
 			case event.ReceiveConnect:
-				p := world.NewPlayer(msg.SenderID)
+				p := world.NewPlayer(msg.ID)
 				if err := w.AddPlayer(p); err != nil {
 					s.errors <- err
 					continue
@@ -30,9 +30,9 @@ func (s *Server) Receiver(w *world.World) {
 				}
 
 			case event.ReceiveClickResponse:
-				log.Printf("received click response from %s", msg.SenderID)
+				log.Printf("received click response from %s", msg.ID)
 				// Publish click response into work
-				w.ClickResponder <- msg.SenderID
+				w.ClickResponder <- msg.ID
 			}
 		}
 	}

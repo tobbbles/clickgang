@@ -24,10 +24,8 @@ type BroadcastMessage struct {
 }
 
 type ReceiveMessage struct {
-	Event string `json:"event"`
-	Data  []byte `json:"data"`
-
-	SenderID uuid.UUID `json:"-"`
+	Event string    `json:"event"`
+	ID    uuid.UUID `json:"id"`
 }
 
 func (m *ReceiveMessage) UnmarshalJSON(buf []byte) error {
@@ -44,7 +42,7 @@ func (m *ReceiveMessage) UnmarshalJSON(buf []byte) error {
 	}
 
 	if len(aux.SenderID) != 0 {
-		m.SenderID = uuid.Must(uuid.Parse(aux.SenderID))
+		m.ID = uuid.Must(uuid.Parse(aux.SenderID))
 	}
 
 	return nil
