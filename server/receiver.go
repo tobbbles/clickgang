@@ -4,6 +4,7 @@ import (
 	"clickgang/event"
 	"clickgang/world"
 	"log"
+	"time"
 )
 
 func (s *Server) Receiver(w *world.World) {
@@ -18,10 +19,20 @@ func (s *Server) Receiver(w *world.World) {
 					continue
 				}
 
-				log.Println("added player to world %s", p.ID)
+				log.Printf("added player to world %s", p.ID)
 
+				s.dispatch <- &event.DispatchMessage{
+					Target: p.ID,
+					Event:  event.DispatchConnected,
+					Data: event.Connected{
+						ID: p.ID,
+					},
+					Timestamp: time.Now(),
+				}
 			case event.ReceiveClickResponse:
-				// TODO: Publish to game state
+				log.Printf("received click response from %s", msg.SenderID)
+				// Publish click response into work
+				w.ClickResponder <- msg.SenderID
 			}
 		}
 	}

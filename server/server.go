@@ -21,9 +21,9 @@ type Server struct {
 	pool map[uuid.UUID]*websocket.Conn
 
 	errs      chan error
-	receive   chan *event.Message
+	receive   chan *event.ReceiveMessage
 	dispatch  chan *event.DispatchMessage
-	broadcast chan interface{}
+	broadcast chan *event.BroadcastMessage
 }
 
 func (s *Server) Start() error {
@@ -117,9 +117,9 @@ func New(addr string) (*Server, error) {
 		pool: make(map[uuid.UUID]*websocket.Conn),
 
 		errs:      make(chan error),
-		receive:   make(chan *event.Message, 200),
-		dispatch:  make(chan *event.DispatchMessage, 200),
-		broadcast: make(chan interface{}, 400),
+		receive:   make(chan *event.ReceiveMessage, 200),
+		dispatch:  make(chan *event.DispatchMessage),
+		broadcast: make(chan *event.BroadcastMessage),
 	}
 
 	// Route handlers

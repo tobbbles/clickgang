@@ -10,9 +10,10 @@ import (
 
 // World oversees all game-based operations
 type World struct {
-	dispatch  chan *event.DispatchMessage
-	broadcast chan interface{}
-	errors    chan error
+	ClickResponder chan uuid.UUID
+	dispatch       chan *event.DispatchMessage
+	broadcast      chan *event.BroadcastMessage
+	errors         chan error
 
 	Players []*Player
 
@@ -21,10 +22,12 @@ type World struct {
 	RoundInstance *Round
 }
 
-func New(dispatch chan *event.DispatchMessage, broadcast chan interface{}) (*World, error) {
+func New(dispatch chan *event.DispatchMessage, broadcast chan *event.BroadcastMessage) (*World, error) {
 	w := &World{
-		dispatch:  dispatch,
-		broadcast: broadcast,
+		ClickResponder: make(chan uuid.UUID),
+		errors:         make(chan error, 10),
+		dispatch:       dispatch,
+		broadcast:      broadcast,
 	}
 
 	go w.Error()
@@ -38,6 +41,7 @@ func (w *World) Error() {
 		select {
 		case err := <-w.errors:
 			log.Println(err)
+
 			w.dispatch <- &event.DispatchMessage{
 				Event: event.DispatchError,
 				Data: event.Errored{
@@ -76,35 +80,38 @@ func (w *World) Supervisor() {
 			continue
 		}
 
-		// TODO: Start Round
 		log.Printf("starting new round with %d players\n", len(w.Players))
 		if err := round.Start(); err != nil {
 			w.errors <- err
 			continue
 		}
 
-		// TODO: Broadcast to all round start
+		// Broadcast to all round start
 		w.BroadcastRoundStart()
 
 		// Tick through the round
 		for round.Tick() {
-			// TODO: Broadcast to all round tick
+			// Broadcast to all round tick
 			w.BroadcastRoundTick(round)
 
-			// TODO: Broadcast to next-in-queue player click request
-			// TODO: See why these aren't synced with round ending
-
+			// Broadcast to next-in-queue player click request
 			w.DispatchClickRequest(round.Next)
-			<-time.After(3 * time.Second)
 
-			// TODO: Await response within timeout
-			// TODO: IF timed out, crash the round and dispatch
+			// Block for a timeout duration, returning whether the click request was fulfilled
+			if !round.Fulfilled(w.ClickResponder) {
+				w.BroadcastRoundCrashed()
+				break
+			}
+
 			log.Printf("round tick %d/%d\n", round.TotalPlayers, round.RemainingPlayers)
 
 			round.RemainingPlayers--
 		}
 
 		w.BroadcastRoundEnded()
+
+		// Wait before starting a new round
+		<-time.After(10 * time.Second)
 	}
 }
 
@@ -159,28 +166,28 @@ func (w *World) DispatchClickRequest(id uuid.UUID) {
 //	Common Broadcasts
 //
 func (w *World) BroadcastRoundStart() {
-	w.broadcast <- &event.DispatchMessage{
+	w.broadcast <- &event.BroadcastMessage{
 		Event:     event.DispatchRoundStarted,
 		Timestamp: time.Now(),
 	}
 }
 
 func (w *World) BroadcastRoundEnded() {
-	w.broadcast <- &event.DispatchMessage{
+	w.broadcast <- &event.BroadcastMessage{
 		Event:     event.DispatchRoundEnded,
 		Timestamp: time.Now(),
 	}
 }
 
 func (w *World) BroadcastRoundCrashed() {
-	w.broadcast <- &event.DispatchMessage{
+	w.broadcast <- &event.BroadcastMessage{
 		Event:     event.DispatchRoundCrashed,
 		Timestamp: time.Now(),
 	}
 }
 
 func (w *World) BroadcastRoundTick(r *Round) {
-	w.broadcast <- &event.DispatchMessage{
+	w.broadcast <- &event.BroadcastMessage{
 		Event: event.DispatchRoundTick,
 		Data: &event.RoundTick{
 			TotalPlayers:     r.TotalPlayers,

@@ -46,7 +46,7 @@ func (s *Server) handle(ws *websocket.Conn) {
 			continue
 		}
 
-		message := &event.Message{}
+		message := &event.ReceiveMessage{}
 		if err := json.Unmarshal(buf, message); err != nil {
 			s.errs <- err
 			continue
@@ -54,12 +54,12 @@ func (s *Server) handle(ws *websocket.Conn) {
 
 		// Invalid event
 		if message.Event != event.ReceiveConnect && message.SenderID == uuid.Nil {
-			ws.WriteJSON(&event.SendMessage{
+			s.dispatch <- &event.DispatchMessage{
 				Event: event.Error,
 				Data: event.Errored{
 					Reason: "unathenticated request",
 				},
-			})
+			}
 
 			continue
 		}
@@ -78,7 +78,7 @@ func (s *Server) handle(ws *websocket.Conn) {
 
 		// TODO: Re-calculate order on user closing connection. Have grace period for a re-connetions
 		ws.SetCloseHandler(func(code int, text string) error {
-			s.receive <- &event.Message{
+			s.receive <- &event.ReceiveMessage{
 				Event:    event.Disconnect,
 				SenderID: message.SenderID,
 			}

@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const Duration = 10 * time.Second
+
 type Round struct {
 	TotalPlayers     int
 	RemainingPlayers int
@@ -39,7 +41,6 @@ func (r *Round) Start() error {
 }
 
 func (r *Round) ShuffleOrder() error {
-
 	r.Order = make([]uuid.UUID, len(r.Players))
 
 	for i, player := range r.Players {
@@ -59,14 +60,23 @@ func (r *Round) Tick() bool {
 		return false
 	}
 
-	// TODO: Dispatch Click request
-	// TODO: Await timeout
-	i := r.TotalPlayers - r.RemainingPlayers
-
 	// Calculate next player
+	i := r.TotalPlayers - r.RemainingPlayers
 	r.Next = r.Order[i]
 
 	return true
+}
+
+// Fulfilled blocks for the duration of Duration, returning false the player didn't fire a click response in time
+func (r *Round) Fulfilled(cr <-chan uuid.UUID) bool {
+	t := time.NewTimer(Duration)
+
+	select {
+	case <-t.C:
+		return false
+	case <-cr:
+		return true
+	}
 }
 
 func (r *Round) Sweep() {
