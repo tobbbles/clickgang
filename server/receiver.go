@@ -15,12 +15,11 @@ func (s *Server) Receiver(w *world.World) {
 			case event.ReceiveConnect:
 				p := world.NewPlayer(msg.SenderID)
 				if err := w.AddPlayer(p); err != nil {
-					s.errs <- err
+					s.errors <- err
 					continue
 				}
 
 				log.Printf("added player to world %s", p.ID)
-
 				s.dispatch <- &event.DispatchMessage{
 					Target: p.ID,
 					Event:  event.DispatchConnected,
@@ -29,6 +28,7 @@ func (s *Server) Receiver(w *world.World) {
 					},
 					Timestamp: time.Now(),
 				}
+
 			case event.ReceiveClickResponse:
 				log.Printf("received click response from %s", msg.SenderID)
 				// Publish click response into work

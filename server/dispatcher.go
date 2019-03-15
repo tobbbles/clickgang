@@ -15,17 +15,17 @@ func (s *Server) Dispatcher() {
 
 			target, ok := s.pool[msg.Target]
 			if !ok {
-				s.errs <- errors.New(fmt.Sprintf("couldn't find websocket connection for target id %s", msg.Target))
+				s.errors <- errors.New(fmt.Sprintf("couldn't find websocket connection for target id %s", msg.Target))
 				continue
 			}
 
 			if target == nil {
-				s.errs <- errors.New(fmt.Sprintf("no websocket connection for target id %s", msg.Target))
+				s.errors <- errors.New(fmt.Sprintf("no websocket connection for target id %s", msg.Target))
 				continue
 			}
 
 			if err := target.WriteJSON(msg); err != nil {
-				s.errs <- err
+				s.errors <- err
 				continue
 			}
 
@@ -35,7 +35,7 @@ func (s *Server) Dispatcher() {
 				log.Printf("broadcasting %s message to %s", msg.Event, id)
 
 				if err := target.WriteJSON(msg); err != nil {
-					s.errs <- err
+					s.errors <- err
 					continue
 				}
 			}

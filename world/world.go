@@ -64,8 +64,7 @@ func (w *World) Supervisor() {
 	for {
 		// Await for two players to start a round
 		if len(w.Players) < 2 {
-			log.Println("not enough players to start game")
-			<-time.After(1 * time.Second)
+			<-time.After(5 * time.Second)
 			continue
 		}
 
@@ -151,7 +150,7 @@ func (w *World) RemovePlayer(id uuid.UUID) error {
 }
 
 //
-//	Dispatch to client
+//	DispatchEvent to client
 //
 func (w *World) DispatchClickRequest(id uuid.UUID) {
 	w.dispatch <- &event.DispatchMessage{

@@ -42,20 +42,20 @@ func (s *Server) handle(ws *websocket.Conn) {
 	for {
 		_, buf, err := ws.ReadMessage()
 		if err != nil {
-			s.errs <- err
+			s.errors <- err
 			continue
 		}
 
 		message := &event.ReceiveMessage{}
 		if err := json.Unmarshal(buf, message); err != nil {
-			s.errs <- err
+			s.errors <- err
 			continue
 		}
 
 		// Invalid event
 		if message.Event != event.ReceiveConnect && message.SenderID == uuid.Nil {
 			s.dispatch <- &event.DispatchMessage{
-				Event: event.Error,
+				Event: event.DispatchError,
 				Data: event.Errored{
 					Reason: "unathenticated request",
 				},
@@ -73,13 +73,13 @@ func (s *Server) handle(ws *websocket.Conn) {
 		s.pool[message.SenderID] = ws
 		s.pmu.Unlock()
 
-		// Dispatch message to system
+		// DispatchEvent message to system
 		s.receive <- message
 
 		// TODO: Re-calculate order on user closing connection. Have grace period for a re-connetions
 		ws.SetCloseHandler(func(code int, text string) error {
 			s.receive <- &event.ReceiveMessage{
-				Event:    event.Disconnect,
+				Event:    event.DispatchDisconnected,
 				SenderID: message.SenderID,
 			}
 

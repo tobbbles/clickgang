@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// PlayerStatus represents the current status of player, used to query who's waiting for next round
 type PlayerStatus = string
 
 var (
@@ -14,6 +15,7 @@ var (
 
 // Player represents every connection that has issued a connect event and been given an ID
 type Player struct {
+
 	ID       uuid.UUID
 	Status   PlayerStatus
 	LastSeen time.Time
@@ -27,8 +29,7 @@ func NewPlayer(id uuid.UUID) *Player {
 		ID: id,
 	}
 
-	// TODO: Create random timeout
-	// TODO: Update last seen cleanly
+	// TODO: Implement heartbeats to players
 
 	return p
 }

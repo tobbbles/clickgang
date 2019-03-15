@@ -14,13 +14,12 @@ import (
 
 type Server struct {
 	*http.Server
-	TemplatePath string
 	r            *mux.Router
 
 	pmu  sync.RWMutex
 	pool map[uuid.UUID]*websocket.Conn
 
-	errs      chan error
+	errors    chan error
 	receive   chan *event.ReceiveMessage
 	dispatch  chan *event.DispatchMessage
 	broadcast chan *event.BroadcastMessage
@@ -30,72 +29,9 @@ func (s *Server) Start() error {
 	return s.ListenAndServe()
 }
 
-//func (s *Server) Receive() {
-//	for {
-//		select {
-//		case msg := <-s.receive:
-//			switch msg.Event {
-//			case event.Connect:
-//				// Create player and mark receive state
-//				if err := s.state.AddPlayer(msg.SenderID); err != nil {
-//					s.errs <- err
-//					continue
-//				}
-//
-//				log.Printf("Added player (id: %s) to the world\n", msg.SenderID)
-//
-//				// write back id to the player
-//				if err := s.SendTo(msg.SenderID, &event.SendMessage{
-//					Event: "connect",
-//					Data: &event.ConnectionResponse{
-//						ID: msg.SenderID,
-//					},
-//				}); err != nil {
-//					s.errs <- err
-//				}
-//
-//			case event.Disconnect:
-//				// Remove from connection pool
-//				s.pmu.Lock()
-//				delete(s.pool, msg.SenderID)
-//				s.pmu.Unlock()
-//
-//				// remove player from world state
-//				if err := s.state.RemovePlayer(msg.SenderID); err != nil {
-//					s.errs <- err
-//					continue
-//				}
-//
-//				log.Println("Removed player from world")
-//
-//			case event.ClickResponse:
-//				e := &event.ClickResponded{}
-//				if err := json.Unmarshal(msg.Data, e); err != nil {
-//					s.errs <- err
-//					continue
-//				}
-//
-//				if !s.state.Playing() {
-//					if err := s.SendTo(msg.SenderID, &event.SendMessage{
-//						Event: event.Error,
-//						Data: &event.Errored{
-//							Reason: "no game is running",
-//						},
-//					}); err != nil {
-//						s.errs <- err
-//					}
-//					continue
-//				}
-//
-//				s.state.GameClick(msg.SenderID)
-//			}
-//		}
-//	}
-//}
-
 func (s *Server) Errors() {
 	select {
-	case err := <-s.errs:
+	case err := <-s.errors:
 		log.Println(err)
 	}
 }
@@ -110,13 +46,12 @@ func New(addr string) (*Server, error) {
 		Server: &http.Server{
 			Addr: addr,
 		},
-		TemplatePath: "static",
 		r:            mux.NewRouter(),
 
 		pmu:  sync.RWMutex{},
 		pool: make(map[uuid.UUID]*websocket.Conn),
 
-		errs:      make(chan error),
+		errors:    make(chan error),
 		receive:   make(chan *event.ReceiveMessage, 200),
 		dispatch:  make(chan *event.DispatchMessage),
 		broadcast: make(chan *event.BroadcastMessage),

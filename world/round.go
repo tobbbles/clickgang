@@ -33,11 +33,7 @@ func (r *Round) Start() error {
 	}
 
 	// Shuffle the round order
-	if err := r.ShuffleOrder(); err != nil {
-		return err
-	}
-
-	return nil
+	return r.ShuffleOrder()
 }
 
 func (r *Round) ShuffleOrder() error {
@@ -79,14 +75,11 @@ func (r *Round) Fulfilled(cr <-chan uuid.UUID) bool {
 	}
 }
 
+// Sweep cleans out players who have been marked for removal from the round
 func (r *Round) Sweep() {
 	for _, player := range r.Players {
 		if player.MarkedForRemoval {
-			r.removePlayer(player)
+			// TODO: Remove the player from the round and ensure it's gracefully handled
 		}
 	}
-}
-
-func (r *Round) removePlayer(p *Player) {
-	//if p.
 }
