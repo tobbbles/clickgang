@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+*, *:after, *:before {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 0.625em;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+main .container {
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.info {
+    flex: 0 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    padding: 7rem;
+}
+
+#round {
+    font-size: 5rem;
+    text-align: center;
+}
+
+#players {text-align: center;font-size: 2rem;}
+
+#circle {position: relative;height: 100%;flex: 1 0 auto;}
+
+#cg-action {
+    margin: 0;
+    width: 30rem;
+    height: 7.5rem;
+    padding: 2rem;
+    background-color: #FF8686;
+    border: none;
+    line-height: 1;
+    font-size: 1.6rem;
+    cursor: pointer;
+    position: absolute;
+    left: calc(50% - 15rem);
+    top: calc(50% - 3.25rem);
+}
+
+#cg-action.active {
+    background-color: #59E538;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    font-size: 1.4rem;
+    flex-direction: column;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+footer span {
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+footer a {
+    color: #000;
+}
