@@ -9,9 +9,15 @@
 
 ---
 
+### Contributers
+
+ - Toby Archer - Conception, design, backend
+ - Michael Craddock - Frontend
+
 ### Contributing
 
 To hack on this project please first **open a feature request issue ticket!** From there we can discuss implementation details and work on getting a pull request open 
 
 ### License
 
+GNU GPL v3 - See LICENCE file for more information
