@@ -1,14 +1,13 @@
 import { get } from 'lodash';
-import '../css/main.scss'
+import '../css/main.scss';
 
-let user;
 let state;
 
 const gameEvent = ({ event = 'heartbeat', data = {} }) => {
   const payload = {
     event,
     timestamp: new Date().toISOString(),
-    id: user,
+    id: state.user,
     data: {
       ...data
     }
@@ -40,8 +39,9 @@ const updateCircle = () => {
 
 };
 
-const setState = (newState) => {
+const setState = (newState, callback) => {
   state = { ...state, ...newState };
+
 };
 
 const updatePlayers = () => {
@@ -61,7 +61,7 @@ const initClickGang = () => {
 
   // inform server of disconnect when user closes window
   window.addEventListener('beforeunload', () => {
-    if (user) {
+    if (state.user) {
       connection.send(gameEvent({ event: 'disconnect' }));
     }
   });
@@ -91,10 +91,19 @@ const initClickGang = () => {
     console.log('payload', event);
     console.groupEnd();
 
+    const {
+      total_players,
+      remaining_players
+    } = event.data;
+
     switch (event.event) {
       case 'connected':
         // {"event": "connected", "data": { "id": "xxxx-xxxxxxxx-xxx–xxxxxx" }}
-        user = get(event, 'data.id');
+        setState({
+          user: event.data.id,
+          total_players,
+          remaining_players
+        });
         break;
       case 'disconnected':
         // {"event": "disconnected"}
@@ -106,11 +115,18 @@ const initClickGang = () => {
         break;
       case 'round_ended':
         disableButton();
-        setState({ remaining_players: 0 });
+        setState({
+          total_players,
+          remaining_players
+        });
         // {"event": "round_ended", "data": {"timestamp": "..."}}
         break;
       case 'round_crashed':
         disableButton();
+        setState({
+          total_players,
+          remaining_players
+        });
         // {"event": "round_crashed", "data":{"timestamp": "..."}}
         break;
       case 'round_tick':
@@ -119,7 +135,7 @@ const initClickGang = () => {
         setState({
           total_players,
           remaining_players
-        } = event.data);
+        });
         break;
       case 'notify':
         new Notification(get(event, 'data.title'), {
@@ -128,7 +144,7 @@ const initClickGang = () => {
         break;
       case 'click_requested':
         cgButton.classList.add('active');
-        new Notification('Time to click!', { body: 'It\'s your turn to clink now! :D' });
+        new Notification('Time to click!', { body: 'It\'s your turn to click now! :D' });
         break;
       default:
         console.log(event);
