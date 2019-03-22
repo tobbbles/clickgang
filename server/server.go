@@ -4,18 +4,21 @@ import (
 	"clickgang/event"
 	"clickgang/world"
 	"errors"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"sync"
-	"fmt"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 type Server struct {
 	*http.Server
-	r            *mux.Router
+	r *mux.Router
 
 	pmu  sync.RWMutex
 	pool map[uuid.UUID]*websocket.Conn
@@ -47,7 +50,7 @@ func New(addr string) (*Server, error) {
 		Server: &http.Server{
 			Addr: addr,
 		},
-		r:            mux.NewRouter(),
+		r: mux.NewRouter(),
 
 		pmu:  sync.RWMutex{},
 		pool: make(map[uuid.UUID]*websocket.Conn),
@@ -85,13 +88,20 @@ func NewWeb(addr string) (*Server, error) {
 		Server: &http.Server{
 			Addr: addr,
 		},
-		r:            mux.NewRouter(),
+		r: mux.NewRouter(),
 	}
 
+	// templates
+	tmpl := template.Must(template.ParseFiles("ui/index.html"))
+
 	// Route handlers
+	fs := http.FileServer(http.Dir("./ui/assets/"))
+	fs = handlers.CombinedLoggingHandler(os.Stderr, fs)
+	s.r.PathPrefix("/assets").Handler(http.StripPrefix("/assets/", fs))
+
 	s.r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Fprintf(w, "Welcome to my website!")
-    })
+		tmpl.Execute(w, nil)
+	})
 	s.Handler = s.r
 
 	return s, nil
