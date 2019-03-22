@@ -1,9 +1,10 @@
-const { get } = _;
+import { get } from 'lodash';
+import '../css/main.scss'
 
 let user;
 let state;
 
-gameEvent = ({ event = 'heartbeat', data = {} }) => {
+const gameEvent = ({ event = 'heartbeat', data = {} }) => {
   const payload = {
     event,
     timestamp: new Date().toISOString(),
@@ -20,7 +21,7 @@ gameEvent = ({ event = 'heartbeat', data = {} }) => {
   return JSON.stringify(payload);
 };
 
-handleDisconnect = (serverTriggered) => {
+const handleDisconnect = (serverTriggered) => {
   if (serverTriggered) {
     console.log('server triggered disconnect');
   } else {
@@ -28,22 +29,22 @@ handleDisconnect = (serverTriggered) => {
   }
 };
 
-disableButton = () => {
+const disableButton = () => {
   const cgButton = document.getElementById('cg-action');
 
   cgButton.classList.remove('active');
 
 };
 
-updateCircle = () => {
+const updateCircle = () => {
 
 };
 
-setState = (newState) => {
+const setState = (newState) => {
   state = { ...state, ...newState };
 };
 
-updatePlayers = () => {
+const updatePlayers = () => {
   const { total_players, remaining_players } = state;
 
   const playerDisplay = document.querySelectorAll('#players span');
@@ -52,7 +53,7 @@ updatePlayers = () => {
   playerDisplay[1].innerHTML = total_players;
 };
 
-initClickGang = () => {
+const initClickGang = () => {
   const cgButton = document.getElementById('cg-action');
 
   // websocket config
