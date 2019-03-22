@@ -1,4 +1,5 @@
-const { get } = _;
+import { get } from 'lodash';
+import '../css/main.scss'
 
 let user;
 let state;
