@@ -127,6 +127,7 @@ initClickGang = () => {
         break;
       case 'click_requested':
         cgButton.classList.add('active');
+        new Notification('Time to click!', { body: 'It\'s your turn to clink now! :D' });
         break;
       default:
         console.log(event);
