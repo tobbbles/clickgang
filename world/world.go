@@ -17,8 +17,8 @@ type World struct {
 
 	Players []*Player
 
-	// Round Instance owned by the supervisor
-	rimu          sync.RWMutex
+	rimu sync.RWMutex
+	// RoundInstance owned by the supervisor
 	RoundInstance *Round
 }
 
@@ -86,7 +86,7 @@ func (w *World) Supervisor() {
 		}
 
 		// Broadcast to all round start
-		w.BroadcastRoundStart()
+		w.BroadcastRoundStart(round)
 
 		// Tick through the round
 		for round.Tick() {
@@ -98,7 +98,7 @@ func (w *World) Supervisor() {
 
 			// Block for a timeout duration, returning whether the click request was fulfilled
 			if !round.Fulfilled(w.ClickResponder) {
-				w.BroadcastRoundCrashed()
+				w.BroadcastRoundCrashed(round)
 				break
 			}
 
@@ -107,7 +107,7 @@ func (w *World) Supervisor() {
 			round.RemainingPlayers--
 		}
 
-		w.BroadcastRoundEnded()
+		w.BroadcastRoundEnded(round)
 
 		// Wait before starting a new round
 		<-time.After(10 * time.Second)
@@ -164,23 +164,35 @@ func (w *World) DispatchClickRequest(id uuid.UUID) {
 //
 //	Common Broadcasts
 //
-func (w *World) BroadcastRoundStart() {
+func (w *World) BroadcastRoundStart(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
-		Event:     event.DispatchRoundStarted,
+		Event: event.DispatchRoundStarted,
+		Data: event.DispatchRoundStart{
+			TotalPlayers:     r.TotalPlayers,
+			RemainingPlayers: r.RemainingPlayers,
+		},
 		Timestamp: time.Now(),
 	}
 }
 
-func (w *World) BroadcastRoundEnded() {
+func (w *World) BroadcastRoundEnded(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
-		Event:     event.DispatchRoundEnded,
+		Event: event.DispatchRoundEnded,
+		Data: event.DispatchRoundEnd{
+			TotalPlayers:     r.TotalPlayers,
+			RemainingPlayers: r.RemainingPlayers,
+		},
 		Timestamp: time.Now(),
 	}
 }
 
-func (w *World) BroadcastRoundCrashed() {
+func (w *World) BroadcastRoundCrashed(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
-		Event:     event.DispatchRoundCrashed,
+		Event: event.DispatchRoundCrashed,
+		Data: event.DispatchRoundCrash{
+			TotalPlayers:     r.TotalPlayers,
+			RemainingPlayers: r.RemainingPlayers,
+		},
 		Timestamp: time.Now(),
 	}
 }
