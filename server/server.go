@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"fmt"
 )
 
 type Server struct {
@@ -70,6 +71,28 @@ func New(addr string) (*Server, error) {
 	go s.Receiver(wrld)
 
 	go s.Errors()
+
+	return s, nil
+}
+
+func NewWeb(addr string) (*Server, error) {
+	if len(addr) == 0 {
+		return nil, errors.New("invalid address given whilst initialising server")
+	}
+
+	// Setup Server
+	s := &Server{
+		Server: &http.Server{
+			Addr: addr,
+		},
+		r:            mux.NewRouter(),
+	}
+
+	// Route handlers
+	s.r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintf(w, "Welcome to my website!")
+    })
+	s.Handler = s.r
 
 	return s, nil
 }

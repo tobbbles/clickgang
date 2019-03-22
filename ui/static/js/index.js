@@ -3,7 +3,7 @@ const { get } = _;
 let user;
 let state;
 
-gameEvent = ({ event = 'heartbeat', data }) => {
+gameEvent = ({ event = 'heartbeat', data = {} }) => {
   const payload = {
     event,
     timestamp: new Date().toISOString(),
@@ -59,15 +59,15 @@ initClickGang = () => {
   const connection = new WebSocket('ws://localhost:3117/game');
 
   // inform server of disconnect when user closes window
-  window.addEventListener('beforeunload', (event) => {
+  window.addEventListener('beforeunload', () => {
     if (user) {
       connection.send(gameEvent({ event: 'disconnect' }));
     }
   });
 
-  connection.onopen = msg => {
+  connection.onopen = () => {
     // send connect event
-    // recieve user id
+    // receive user id
     connection.send(JSON.stringify({
       event: 'connect'
     }));
@@ -77,7 +77,7 @@ initClickGang = () => {
     handleDisconnect();
   };
 
-  connection.onerror = (msg) => {
+  connection.onerror = () => {
     throw new Error('Websocket connection error');
   };
 
@@ -85,7 +85,7 @@ initClickGang = () => {
     const event = JSON.parse(msg.data);
 
     // debugging
-    console.groupCollapsed(`Recieved: ${ event.event }`);
+    console.groupCollapsed(`Received: ${ event.event }`);
     console.log('response', msg);
     console.log('payload', event);
     console.groupEnd();

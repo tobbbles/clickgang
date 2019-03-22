@@ -11,5 +11,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Fatal(srv.Start())
+    srv2, err := server.NewWeb("localhost:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go log.Fatal(srv.Start())
+	go log.Fatal(srv2.Start())
 }
