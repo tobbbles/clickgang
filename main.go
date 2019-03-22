@@ -6,16 +6,24 @@ import (
 )
 
 func main() {
-	srv, err := server.New("localhost:3117")
-	if err != nil {
-		log.Fatal(err)
-	}
+    log.SetFlags(log.LstdFlags|log.Lshortfile)
 
-    srv2, err := server.NewWeb("localhost:80")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	go log.Fatal(srv.Start())
-	go log.Fatal(srv2.Start())
+   go func (){
+        srv, err := server.New("localhost:3117")
+        if err != nil {
+            log.Fatal(err)
+        }
+        log.Fatal(srv.Start())
+	}()
+
+    go func (){
+        srv2, err := server.NewWeb("localhost:4040")
+        if err != nil {
+            log.Fatal(err)
+        }
+        log.Fatal(srv2.Start())
+    }()
+
+    select{}
 }
