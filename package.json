@@ -1,0 +1,24 @@
+{
+  "name": "clickgang",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <h3 align=\"center\">clickgang</h3>   <p align=\"center\">A simple little web-based game built with Go</p>   <p align=\"center\">     <a href=\"https://circleci.com/gh/spaceshuttl/clickgang/tree/master\"><img src=\"https://circleci.com/gh/spaceshuttl/clickgang/tree/master.svg?style=svg\"></a>     <a href=\"https://goreportcard.com/report/github.com/spaceshuttl/clickgang\"><img src=\"https://goreportcard.com/badge/github.com/spaceshuttl/clickgang\"></a>   </p> </p>",
+  "main": "ui/assets/js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spaceshuttl/clickgang.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/spaceshuttl/clickgang/issues"
+  },
+  "homepage": "https://github.com/spaceshuttl/clickgang#readme",
+  "dependencies": {
+    "lodash": "^4.17.11",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
+  }
+}
