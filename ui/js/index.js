@@ -1,6 +1,7 @@
 const { get } = _;
 
 let user;
+let state;
 
 gameEvent = ({ event = 'heartbeat', data }) => {
   const payload = {
@@ -8,7 +9,7 @@ gameEvent = ({ event = 'heartbeat', data }) => {
     timestamp: new Date().toISOString(),
     id: user,
     data: {
-      ...data,
+      ...data
     }
   };
 
@@ -27,6 +28,30 @@ handleDisconnect = (serverTriggered) => {
   }
 };
 
+disableButton = () => {
+  const cgButton = document.getElementById('cg-action');
+
+  cgButton.classList.remove('active');
+
+};
+
+updateCircle = () => {
+
+};
+
+setState = (newState) => {
+  state = { ...state, ...newState };
+};
+
+updatePlayers = () => {
+  const { total_players, remaining_players } = state;
+
+  const playerDisplay = document.querySelectorAll('#players span');
+
+  playerDisplay[0].innerHTML = remaining_players;
+  playerDisplay[1].innerHTML = total_players;
+};
+
 initClickGang = () => {
   const cgButton = document.getElementById('cg-action');
 
@@ -34,7 +59,7 @@ initClickGang = () => {
   const connection = new WebSocket('ws://localhost:3117/game');
 
   // inform server of disconnect when user closes window
-  window.addEventListener('beforeunload', () => {
+  window.addEventListener('beforeunload', (event) => {
     if (user) {
       connection.send(gameEvent({ event: 'disconnect' }));
     }
@@ -44,7 +69,7 @@ initClickGang = () => {
     // send connect event
     // recieve user id
     connection.send(JSON.stringify({
-      event: 'connect',
+      event: 'connect'
     }));
   };
 
@@ -75,17 +100,25 @@ initClickGang = () => {
         handleDisconnect(true);
         break;
       case 'round_started':
+        disableButton();
         // {"event": "round_started", "data": {"timestamp": "..."}}
         break;
       case 'round_ended':
+        disableButton();
+        setState({ remaining_players: 0 });
         // {"event": "round_ended", "data": {"timestamp": "..."}}
         break;
       case 'round_crashed':
+        disableButton();
         // {"event": "round_crashed", "data":{"timestamp": "..."}}
         break;
       case 'round_tick':
         // game pause logic
         //{"event": "round_tick", "data": {"total_players": 60, "remaining_players": 35, "timestamp":"..."}}
+        setState({
+          total_players,
+          remaining_players
+        } = event.data);
         break;
       case 'notify':
         new Notification(get(event, 'data.title'), {
@@ -99,16 +132,18 @@ initClickGang = () => {
         console.log(event);
         break;
     }
+
+    updatePlayers(event.data);
   };
 
 
   // click response
   // game button
   cgButton.addEventListener('click', () => {
-    console.log('clicked');
+    disableButton();
     connection.send(
       gameEvent({
-        event: 'click_response',
+        event: 'click_response'
       })
     );
   });
