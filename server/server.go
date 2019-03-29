@@ -92,7 +92,7 @@ func NewWeb(addr string) (*Server, error) {
 	}
 
 	// templates
-	tmpl := template.Must(template.ParseFiles("ui/index.html"))
+	tmpl := template.Must(template.ParseFiles("./ui/index.html"))
 
 	// Route handlers
 	fs := http.FileServer(http.Dir("./ui/assets/"))
