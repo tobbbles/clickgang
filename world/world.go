@@ -15,7 +15,8 @@ type World struct {
 	broadcast      chan *event.BroadcastMessage
 	errors         chan error
 
-	Players []*Player
+	Players    []*Player
+	RoundCount int
 
 	rimu sync.RWMutex
 	// RoundInstance owned by the supervisor
@@ -123,6 +124,8 @@ func (w *World) NewRound(players []*Player) (*Round, error) {
 		CreatedAt:        time.Now(),
 	}
 
+	w.RoundCount++
+
 	return r, nil
 }
 
@@ -168,6 +171,7 @@ func (w *World) BroadcastRoundStart(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
 		Event: event.DispatchRoundStarted,
 		Data: event.DispatchRoundStart{
+			RoundCount:       w.RoundCount,
 			TotalPlayers:     r.TotalPlayers,
 			RemainingPlayers: r.RemainingPlayers,
 		},
