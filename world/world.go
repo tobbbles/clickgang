@@ -184,6 +184,7 @@ func (w *World) BroadcastRoundEnded(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
 		Event: event.DispatchRoundEnded,
 		Data: event.DispatchRoundEnd{
+			RoundCount:       w.RoundCount,
 			TotalPlayers:     r.TotalPlayers,
 			RemainingPlayers: r.RemainingPlayers,
 		},
@@ -206,6 +207,7 @@ func (w *World) BroadcastRoundTick(r *Round) {
 	w.broadcast <- &event.BroadcastMessage{
 		Event: event.DispatchRoundTick,
 		Data: &event.RoundTick{
+			RoundCount:       w.RoundCount,
 			TotalPlayers:     r.TotalPlayers,
 			RemainingPlayers: r.RemainingPlayers,
 		},

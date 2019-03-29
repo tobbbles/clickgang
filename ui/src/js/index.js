@@ -54,6 +54,8 @@ const updateCircle = () => {
 
 const setState = (newState, callback) => {
   state = { ...state, ...newState };
+
+  callback();
 };
 
 const updatePlayers = () => {
@@ -63,6 +65,13 @@ const updatePlayers = () => {
 
   playerDisplay[0].innerHTML = remaining_players;
   playerDisplay[1].innerHTML = total_players;
+};
+
+const updateRound = () => {
+  const { round_count } = state;
+
+  const roundDisplay = document.querySelectorAll('#round span');
+  roundDisplay[0].innerHTML = round_count;
 };
 
 const initClickGang = () => {
@@ -114,7 +123,8 @@ const initClickGang = () => {
         setState({
           user: event.data.id,
           total_players,
-          remaining_players
+          remaining_players,
+          round_count: 0
         });
         break;
       case 'disconnected':
@@ -123,14 +133,18 @@ const initClickGang = () => {
         break;
       case 'round_started':
         disableButton();
+        setState({
+          round_count: event.data.round_count
+        }, updateRound);
         // {"event": "round_started", "data": {"timestamp": "..."}}
         break;
       case 'round_ended':
         disableButton();
         setState({
           total_players,
-          remaining_players
-        });
+          remaining_players,
+          round_count: event.data.round_count
+        }, updateRound);
         // {"event": "round_ended", "data": {"timestamp": "..."}}
         break;
       case 'round_crashed':
@@ -146,8 +160,10 @@ const initClickGang = () => {
         //{"event": "round_tick", "data": {"total_players": 60, "remaining_players": 35, "timestamp":"..."}}
         setState({
           total_players,
-          remaining_players
+          remaining_players,
+          round_count: event.data.round_count
         });
+        updateCircle();
         break;
       case 'notify':
         createNotification({
