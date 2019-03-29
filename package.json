@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:dev": "webpack",
-    "build:prod": "webpack --config webpack.prod.config.js"
+    "build:prod": "webpack --config webpack.prod.config.js",
+    "run:dev": "webpack --config webpack.config.js && go build . && ./clickgang"
   },
   "repository": {
     "type": "git",

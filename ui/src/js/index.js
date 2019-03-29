@@ -3,6 +3,19 @@ import '../css/main.scss';
 
 let state;
 
+const createNotification = ({
+  title,
+  body
+}) => {
+  const notify = new Notification(title, { body });
+
+  notify.onclick = function () {
+    window.focus();
+  };
+
+  setTimeout(notify.close.bind(notify), 4000);
+};
+
 const gameEvent = ({ event = 'heartbeat', data = {} }) => {
   const payload = {
     event,
@@ -41,7 +54,6 @@ const updateCircle = () => {
 
 const setState = (newState, callback) => {
   state = { ...state, ...newState };
-
 };
 
 const updatePlayers = () => {
@@ -138,13 +150,17 @@ const initClickGang = () => {
         });
         break;
       case 'notify':
-        new Notification(get(event, 'data.title'), {
+        createNotification({
+          title: get(event, 'data.title'),
           body: get(event, 'data.message')
         });
         break;
       case 'click_requested':
         cgButton.classList.add('active');
-        new Notification('Time to click!', { body: 'It\'s your turn to click now! :D' });
+        createNotification({
+          title: 'Time to click!',
+          body: 'It\'s your turn to click now! :D'
+        });
         break;
       default:
         console.log(event);
