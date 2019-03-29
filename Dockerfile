@@ -5,7 +5,7 @@ RUN npm install webpack -g
 ADD . /build
 WORKDIR /build
 RUN npm install
-RUN webpack
+RUN npm run build:prod
 
 FROM golang:1.12-alpine AS builder
 RUN apk add --no-cache git
