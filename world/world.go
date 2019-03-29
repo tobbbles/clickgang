@@ -99,6 +99,7 @@ func (w *World) Supervisor() {
 
 			// Block for a timeout duration, returning whether the click request was fulfilled
 			if !round.Fulfilled(w.ClickResponder) {
+				w.RoundCount--
 				w.BroadcastRoundCrashed(round)
 				break
 			}
