@@ -9,9 +9,9 @@ require (
 	github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/handlers v1.4.0
-	github.com/gorilla/mux v1.6.2
-	github.com/gorilla/websocket v1.3.0
+	github.com/gorilla/handlers v1.4.2
+	github.com/gorilla/mux v1.7.3
+	github.com/gorilla/websocket v1.4.1
 	github.com/josharian/impl v0.0.0-20180228163738-3d0f908298c4 // indirect
 	github.com/jstemmer/gotags v1.4.1 // indirect
 	github.com/keegancsmith/rpc v1.1.0 // indirect
@@ -35,3 +35,5 @@ require (
 	honnef.co/go/tools v0.0.0-20190319011948-d116c56a00f3 // indirect
 
 )
+
+go 1.13

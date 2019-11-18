@@ -1,7 +1,7 @@
 package server
 
 import (
-	"clickgang/event"
+	"clickgang/server/event"
 	"encoding/json"
 	"github.com/google/uuid"
 	"log"

@@ -48,7 +48,11 @@ main .container {
 
 #players {text-align: center;font-size: 2rem;}
 
-#circle {position: relative;height: 100%;flex: 1 0 auto;}
+#circle {
+    position: relative;
+    max-height: 75vh;
+    flex: 1 0 auto;
+}
 
 #cg-action {
     margin: 0;

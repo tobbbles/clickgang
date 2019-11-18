@@ -1,9 +1,10 @@
 package world
 
 import (
-	"github.com/google/uuid"
 	"math/rand"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const Duration = 10 * time.Second
