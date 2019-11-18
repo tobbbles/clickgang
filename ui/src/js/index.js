@@ -44,9 +44,8 @@ const handleDisconnect = (serverTriggered) => {
 const disableButton = () => {
   const cgButton = document.getElementById('cg-action');
 
+  cgButton.innerText = "Don't click me >:(";
   cgButton.classList.remove('active');
-
- 
 };
 
 const startCircle = () => {
@@ -171,6 +170,7 @@ const initClickGang = () => {
         break;
       case 'round_ended':
         disableButton();
+        cgButton.innerText = "Round complete"
         setState({
           total_players,
           remaining_players,
@@ -204,6 +204,7 @@ const initClickGang = () => {
         break;
       case 'click_requested':
         cgButton.classList.add('active');
+        cgButton.innerText = "Click me!"
         createNotification({
           title: 'Time to click!',
           body: 'It\'s your turn to click now! :D'
