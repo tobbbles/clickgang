@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/handlers"
@@ -65,7 +66,7 @@ func New(addr string) (*Server, error) {
 	s.r.Handle("/game", s.Upgrade())
 	s.Handler = s.r
 
-	wrld, err := world.New(s.dispatch, s.broadcast)
+	wrld, err := world.New(s.dispatch, s.broadcast, 30*time.Second)
 	if err != nil {
 		return nil, err
 	}
