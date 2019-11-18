@@ -1,14 +1,16 @@
 package main
 
 import (
-	"clickgang/server"
 	"log"
+
+    "clickgang/server"
 )
 
 func main() {
     log.SetFlags(log.LstdFlags|log.Lshortfile)
 
     go func (){
+        log.Printf("starting game server at %s")
         srv, err := server.New("localhost:3117")
         if err != nil {
             log.Fatal(err)

@@ -1,8 +1,8 @@
 package server
 
 import (
-	"clickgang/event"
-	"clickgang/world"
+	"clickgang/server/event"
+	"clickgang/server/world"
 	"errors"
 	"html/template"
 	"log"

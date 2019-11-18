@@ -1,11 +1,13 @@
 package world
 
 import (
-	"clickgang/event"
-	"github.com/google/uuid"
 	"log"
 	"sync"
 	"time"
+
+	"clickgang/server/event"
+
+	"github.com/google/uuid"
 )
 
 // World oversees all game-based operations
