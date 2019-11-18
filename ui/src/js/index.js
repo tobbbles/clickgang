@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import '../css/main.scss';
 
-let state;
+let state = {};
 
 const createNotification = ({
   title,
@@ -46,11 +46,40 @@ const disableButton = () => {
 
   cgButton.classList.remove('active');
 
+ 
 };
 
-const updateCircle = () => {
+const startCircle = () => {
+  // TODO: update circle every second
 
+   // Total dash = 100
+  // 100 / duration
+
+
+  console.log(`duration: ${state.round_duration/1000000000}`)
+  state.increment = 0;
+
+  state.donutI = setInterval(()=>{
+    // state.round_duration // 30
+
+
+    let incrementalFraction = 360 / (state.round_duration/1000000000)
+
+    state.increment += incrementalFraction
+
+    console.log(`increments are: ${state.increment}, ${100-state.increment}`)
+
+    let donut = document.getElementsByClassName('donut-segment');
+    donut[0].setAttributeNS(null, 'stroke-dasharray', `${state.increment} ${100-state.increment}`);
+  }, 1000)
 };
+
+const stopCircle = () => {
+  if (state.donutI != null) {
+    clearInterval(state.donutI)
+  }
+}
+
 
 const setState = (newState, callback) => {
   state = { ...state, ...newState };
@@ -134,9 +163,11 @@ const initClickGang = () => {
       case 'round_started':
         disableButton();
         setState({
-          round_count: event.data.round_count
+          round_count: event.data.round_count,
+          round_duration: event.data.round_duration
         }, updateRound);
         // {"event": "round_started", "data": {"timestamp": "..."}}
+        startCircle();
         break;
       case 'round_ended':
         disableButton();
@@ -145,6 +176,7 @@ const initClickGang = () => {
           remaining_players,
           round_count: event.data.round_count
         }, updateRound);
+        stopCircle();
         // {"event": "round_ended", "data": {"timestamp": "..."}}
         break;
       case 'round_crashed':
@@ -163,7 +195,6 @@ const initClickGang = () => {
           remaining_players,
           round_count: event.data.round_count
         });
-        updateCircle();
         break;
       case 'notify':
         createNotification({
