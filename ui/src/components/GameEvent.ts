@@ -1,17 +1,8 @@
 import Player from "./Player";
+import { EventType } from "./Type";
 
-export enum Type {
-    Connect = 'connect',
-    Disconnect = 'disconnect'
-}   
-
-interface Props {
-    onClick(w: Window, ev: MouseEvent): any
-}
-
-
-export class Event {
-    type: Type
+export class GameEvent {
+    type: EventType
     
     readonly payload: object
 

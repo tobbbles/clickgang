@@ -1,10 +1,9 @@
 import State from "./State"
-import {Event, Type} from "./Event"
-import Player from "./Player";
-import ConnectionManager from "./Connection";
+import ConnectionManager from "./ConnectionManager";
+import { ConnectHandler, DisconnectHandler } from "./handlers/All";
 
 export default class Game {
-    connection: ConnectionManager
+    cm: ConnectionManager
     state: State
 
     constructor() {
@@ -13,17 +12,21 @@ export default class Game {
         window.addEventListener('beforeunload', () => {
             let player = this.state.player;
 
-            if (player && this.connection) {
+            if (player && this.cm.connection) {
                 // let e: Event = new Event(Type.Disconnect, player)
             }
         });
     }
 
     connect() {
-       this.connection = new ConnectionManager('ws://localhost:3117/game');
+       this.cm = new ConnectionManager('ws://localhost:3117/game');
+       this.router();
     }
 
-
+    router() {
+        this.cm.handle(new ConnectHandler())
+        this.cm.handle(new DisconnectHandler())
+    }
     //
     //      Connection Handlers
     //
@@ -36,3 +39,4 @@ export default class Game {
         }
     }
 }
+

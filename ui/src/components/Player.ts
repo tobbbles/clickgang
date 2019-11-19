@@ -1,6 +1,6 @@
 export default class Player {
     id: string
-    initialised: boolean
+    initialised: boolean = false
 
     constructor(id?: string) {
         if (id) {

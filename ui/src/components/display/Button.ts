@@ -1,4 +1,4 @@
-export class Button {
+export default class Button {
     element: HTMLElement
 
     constructor(){

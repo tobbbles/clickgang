@@ -1,4 +1,4 @@
-export class Round {
+export default class Round {
     readonly element: HTMLElement
     
     count: number 
