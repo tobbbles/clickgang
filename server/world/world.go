@@ -12,11 +12,15 @@ import (
 
 // World oversees all game-based operations
 type World struct {
+	// Configuration
+	Duration time.Duration
+	// Internals
 	ClickResponder chan uuid.UUID
 	dispatch       chan *event.DispatchMessage
 	broadcast      chan *event.BroadcastMessage
 	errors         chan error
 
+	// State
 	Players    []*Player
 	RoundCount int
 
@@ -25,12 +29,13 @@ type World struct {
 	RoundInstance *Round
 }
 
-func New(dispatch chan *event.DispatchMessage, broadcast chan *event.BroadcastMessage) (*World, error) {
+func New(dispatch chan *event.DispatchMessage, broadcast chan *event.BroadcastMessage, duration time.Duration) (*World, error) {
 	w := &World{
 		ClickResponder: make(chan uuid.UUID),
 		errors:         make(chan error, 10),
 		dispatch:       dispatch,
 		broadcast:      broadcast,
+		Duration:       duration,
 	}
 
 	go w.Error()
@@ -175,6 +180,7 @@ func (w *World) BroadcastRoundStart(r *Round) {
 		Event: event.DispatchRoundStarted,
 		Data: event.DispatchRoundStart{
 			RoundCount:       w.RoundCount,
+			RoundDuration:    w.Duration,
 			TotalPlayers:     r.TotalPlayers,
 			RemainingPlayers: r.RemainingPlayers,
 		},
