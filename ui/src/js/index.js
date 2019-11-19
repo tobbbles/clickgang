@@ -1,6 +1,8 @@
 import { get } from 'lodash';
 import '../css/main.scss';
 
+import Button from './button.js'
+
 let state;
 
 const createNotification = ({
@@ -132,7 +134,7 @@ const initClickGang = () => {
         handleDisconnect(true);
         break;
       case 'round_started':
-        disableButton();
+        Button.disable();
         setState({
           round_count: event.data.round_count
         }, updateRound);
