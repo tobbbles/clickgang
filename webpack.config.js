@@ -1,14 +1,36 @@
-const path = require('path');
+const { resolve } = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './ui/src/js/index.js',
+  devtool: 'inline-source-map',
+  context: resolve(__dirname, 'ui/src'),
+  entry: './App.ts',
+  resolve: {
+    extensions: [ '.tsx', '.ts', '.js' ],
+  },
   output: {
+    path: resolve(__dirname, 'ui/assets'),
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'ui/assets/js')
+    publicPath: '/'
+  },
+  devServer: {
+    compress: true,  
+    hot: true,
+    noInfo: false,
+    quiet: false,
+    contentBase: resolve(__dirname, 'ui'),
+    publicPath: '/',
+    port: 9000
   },
   module: {
     rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
       {
         test: /\.scss$/,
         use: [
@@ -18,5 +40,10 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({template: resolve(__dirname, 'ui/index.html')}),
+  ]
 };

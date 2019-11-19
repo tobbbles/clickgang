@@ -5,9 +5,10 @@
   "main": "ui/src/js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "run:dev": "webpack-dev-server --mode development  --open --hot",
     "build:dev": "webpack",
     "build:prod": "webpack --config webpack.prod.config.js",
-    "run:dev": "webpack --config webpack.config.js && go build . && ./clickgang"
+    "run:stack": "webpack --config webpack.config.js && go build . && ./clickgang"
   },
   "repository": {
     "type": "git",
@@ -28,5 +29,11 @@
     "style-loader": "^0.23.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.2",
+    "webpack-dev-server": "^3.9.0"
   }
 }
